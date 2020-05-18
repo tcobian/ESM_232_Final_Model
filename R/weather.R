@@ -1,0 +1,1 @@
+#' Weather model that will effect how increases in temperature will effect the effectiveness of stay at home orders and amount of mobil emissions
