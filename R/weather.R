@@ -4,5 +4,7 @@
 
 
 weather = function(mean_weather, ca_average = 65){
-  miles_day = miles_day * 0.5 * (mean_weather - ca_average)
+  miles_day_weather = miles_day * 0.5 * (mean_weather - ca_average)
+  
+  return(miles_day_weather)
 }

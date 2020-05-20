@@ -10,4 +10,6 @@
 shelter = function(strength, CA_pop = 39510000){
  suscptible = strength * CA_pop
  miles_day = strength * miles_day
+ 
+ return(list(suscptible, miles_day))
 }
