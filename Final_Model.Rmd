@@ -37,3 +37,55 @@ infected
 
 ```
 
+Try to for loop the functions?
+```{r}
+
+final_model<- function(parms){
+  # Set up the parms
+b<- parms$b
+s<- parms$s
+i<- parms$i
+k<- parms$k
+shelter_strength<- parms$shelter_strength
+  
+  
+  
+  # nake a data frame to hold the outputs
+  covid<- data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, ghg = NA, shelter_strength = NA, mean_temp = NA)
+  
+  # impliment the SIR model first
+for (i in 1:length(covid$day)){
+  covid$infected_no_shelter = b*s*i - k*i
+}
+
+  # impliment the Shelter model
+for (i in 1:length(covid$day)){
+  covid$infected_shelter = infected_no_shelter * shelter_strength
+}
+  
+}
+
+parms = list(b = 3, s = 39510000, i = 100, k = 5, shelter_strength = 0.5)
+
+final_model(parms)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
