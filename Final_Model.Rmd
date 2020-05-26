@@ -1,0 +1,39 @@
+---
+title: "Final_Model"
+author: "Tyler Cobian"
+date: "5/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Try to nest the fuinctions
+```{r}
+# Get the output for shelter model of susceptible population and the miles driven a day in CA
+
+shelter = function(strength, CA_pop = 39510000, miles_day = 974219178){
+ suscptible = strength * CA_pop
+ miles_day = strength * miles_day
+ 
+ return(list(suscptible, miles_day))
+}
+
+shelter_output<- as.numeric(shelter(0.8))
+shelter_output
+
+# Feed the output of the shelter model into the SIR model
+
+SIR = function(b = 5, k = 0.05, s, i){
+  infected = b*s*i-k*i
+  return(list(infected))
+}
+
+infected<- SIR(s = shelter_output[1], i = 500)
+infected
+
+
+
+```
+
