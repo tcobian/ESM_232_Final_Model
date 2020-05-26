@@ -40,34 +40,30 @@ infected
 Try to for loop the functions?
 ```{r}
 
-final_model<- function(parms){
-  # Set up the parms
-b<- parms$b
-s<- parms$s
-i<- parms$i
-k<- parms$k
-shelter_strength<- parms$shelter_strength
-  
-  
-  
+final_model<- function(b, s, i, k, shelter_strength, avg_mile_day = 974219178, mean_temp, mile_emission = 0.411){
   # nake a data frame to hold the outputs
-  covid<- data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, ghg = NA, shelter_strength = NA, mean_temp = NA)
+  covid<- data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, ghg = NA, miles_driven = NA)
   
-  # impliment the SIR model first
-for (i in 1:length(covid$day)){
-  covid$infected_no_shelter = b*s*i - k*i
-}
 
-  # impliment the Shelter model
-for (i in 1:length(covid$day)){
-  covid$infected_shelter = infected_no_shelter * shelter_strength
+for (i in 1:length(covid$day)){ # SIR without shelter in place
+  covid$infected_no_shelter = b*s*i - k*i 
+  for(i in 1:length(covid$day)){ # numer infected with shelter in place
+    covid$infected_shelter = covid$infected_no_shelter * shelter_strength
+    for (i in length(covid$day)){ # miles driven in a day
+      covid$miles_driven = (mean_temp + (2*shelter_strength)) * avg_mile_day
+      for(i in length(covid$day)){
+        covid$ghg = covid$miles_driven * mile_emission
+      }
+    }
+  }
 }
   
+  return(as.data.frame(covid))
 }
 
-parms = list(b = 3, s = 39510000, i = 100, k = 5, shelter_strength = 0.5)
+final_model(b = 3, s = 39510000, i = 100, k = 5, shelter_strength = 0.5, mean_temp = 2)
 
-final_model(parms)
+
 
 ```
 
