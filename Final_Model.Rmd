@@ -51,7 +51,7 @@ for (i in 1:length(covid$day)){ # SIR without shelter in place
     covid$infected_shelter = covid$infected_no_shelter * shelter_strength
     for (i in length(covid$day)){ # miles driven in a day
       covid$miles_driven = (mean_temp + (2*shelter_strength)) * avg_mile_day
-      for(i in length(covid$day)){
+      for(i in length(covid$day)){ # emission per mile driven
         covid$ghg = covid$miles_driven * mile_emission
       }
     }
