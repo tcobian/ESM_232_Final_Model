@@ -55,9 +55,6 @@ final_model<- function(time, i, avg_mile_day = 974219178, mile_emission = 0.411,
   k<- parms$k
   shelter_strength<- parms$shelter_strength
   mean_temp<- parms$mean_temp
-
-  
-  
   
   # nake a data frame to hold the outputs
   covid<- as.data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, miles_driven = NA, ghg = NA)
