@@ -9,6 +9,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Load the packages
+```{r}
+library(tidyverse)
+library(sensitivity)
+library(deSolve)
+```
+
+
 Try to nest the fuinctions
 ```{r}
 # Get the output for shelter model of susceptible population and the miles driven a day in CA
@@ -42,7 +50,7 @@ Try to for loop the functions?
 
 final_model<- function(b, s, i, k, shelter_strength, avg_mile_day = 974219178, mean_temp, mile_emission = 0.411){
   # nake a data frame to hold the outputs
-  covid<- data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, ghg = NA, miles_driven = NA)
+  covid<- data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, miles_driven = NA, ghg = NA)
 
 for (i in 1:length(covid$day)){ # SIR without shelter in place
   covid$infected_no_shelter = b*s*i - k*i 
@@ -62,6 +70,18 @@ for (i in 1:length(covid$day)){ # SIR without shelter in place
 
 final_model(b = 3, s = 39510000, i = 100, k = 5, shelter_strength = 0.5, mean_temp = 2)
 
+
+########
+# Run with an ODE solver
+########
+
+parms = list(b = 3, s = 39510000, i = 100, k = 5, shelter_strength = 0.5, mean_temp = 2)
+
+time = seq(from = 1, to = 365, by = 1)
+
+initial_infect = 100
+
+result = ode(y = initial_infect, times = time, func = final_model, parms = parms)
 
 
 ```
