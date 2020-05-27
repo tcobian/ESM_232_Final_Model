@@ -71,7 +71,7 @@ for (i in 1:length(covid$day)){ # SIR without shelter in place
     }
   }
 }
-# return the data as a dataframe of covid  
+# return the data as a list of covid  
   return(list(covid))
 }
 
