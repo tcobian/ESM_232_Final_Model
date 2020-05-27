@@ -75,21 +75,18 @@ for (i in 1:length(covid$day)){ # SIR without shelter in place
   return(list(covid))
 }
 
+```
 
-########
-# Run with an ODE solver
-########
-
+Run the ODE solver 
+```{r}
 parms = list(b = 3, s = 39510000, k = 5, shelter_strength = 0.5, mean_temp = 2)
 
 time = seq(from = 1, to = 365, by = 1)
 
-i = 100
+i = 100 # initial infected population
 
 result = ode(y = i, times = time, func = final_model, parms = parms)
-
 ```
-
 
 
 
