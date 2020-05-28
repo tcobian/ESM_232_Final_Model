@@ -1,6 +1,7 @@
 #' SIR model for the spread of COVID-19
 #' 
 #' @param s = amount of people exposed the the disease
+#' @param i = number of infected individuals
 #' @param Infected = amount of people at any one time who has the disease
 #' @param Recovered = amout of people who reover from COVI-19
 #' @param b = the number of people one infected indiviual will transmit to
