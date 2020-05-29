@@ -55,7 +55,7 @@ i = 100 # initial infected population
 
 result = ode(y = i, times = time, func = final_model, parms = parms)
 head(result)
-plot(result)
+
 ```
 
 Make data data set that accounts for 
