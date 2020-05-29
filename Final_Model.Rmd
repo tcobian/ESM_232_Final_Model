@@ -48,13 +48,13 @@ infected
 Try to for loop the functions?
 ```{r}
 
-final_model<- function(time, i, avg_mile_day = 974219178, mile_emission = 0.411, parms){
+final_model<- function(time, i, avg_mile_day = 974219178, mile_emission = 0.411, vars){
   # make the parms list in the function
-  b<- parms$b
-  s<- parms$s
-  k<- parms$k
-  shelter_strength<- parms$shelter_strength
-  mean_temp<- parms$mean_temp
+  b<- vars$b
+  s<- vars$s
+  k<- vars$k
+  shelter_strength<- vars$shelter_strength
+  mean_temp<- vars$mean_temp
   
   # nake a data frame to hold the outputs
   covid<- as.data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, miles_driven = NA, ghg = NA)
@@ -85,7 +85,7 @@ time = seq(from = 1, to = 365, by = 1)
 
 i = 100 # initial infected population
 
-result = ode(y = i, times = time, func = final_model, parms = c(parms))
+result = ode(y = i, times = time, func = final_model, parms = c(vars=parms))
 ```
 
 
