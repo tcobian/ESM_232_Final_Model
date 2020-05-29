@@ -16,49 +16,83 @@ library(sensitivity)
 library(deSolve)
 ```
 
-Try to for loop the functions?
+Try to for loop the functions in nested for loops
 ```{r}
 
-final_model<- function(time, i, avg_mile_day = 974219178, mile_emission = 0.411, vars){
+final_model<- function(time, i, parms){
   # make the parms list in the function
-  b<- vars$b
-  s<- vars$s
-  k<- vars$k
-  shelter_strength<- vars$shelter_strength
-  mean_temp<- vars$mean_temp
+  b<- parms$b
+  s<- parms$s
+  k<- parms$k
   
-  # nake a data frame to hold the outputs
-  covid<- as.data.frame(day = seq(1:365), infected_no_shelter = NA, infected_shelter = NA, miles_driven = NA, ghg = NA)
+  
+  new_infections = b*s*new_infections - k*new_infections
+  
+  infected_no_shelter = infected_no_shelter + new_infections
 
-for (i in 1:length(covid$day)){ # SIR without shelter in place
-  covid$infected_no_shelter = b*s*i - k*i 
-  for(i in 1:length(covid$day)){ # numer infected with shelter in place
-    covid$infected_shelter = covid$infected_no_shelter * shelter_strength
-    for (i in length(covid$day)){ # miles driven in a day
-      covid$miles_driven = (mean_temp + (2*shelter_strength)) * avg_mile_day
-      for(i in length(covid$day)){ # emission per mile driven
-        covid$ghg = covid$miles_driven * mile_emission
-      }
-    }
-  }
-}
-# return the data as a list of covid  
-  return(list(covid))
+#  infected_shelter = infected_no_shelter * shelter_strength
+  
+#  miles_driven = (mean_temp  * infected_shelter) * avg_mile_day
+  
+#  ghg = miles_driven * mile_emission
+  
+# avg_mile_day = 974219178
+  
+#  mile_emission = 0.411
+
+  return(list(infected_no_shelter))
 }
 
 ```
 
 Run the ODE solver 
 ```{r}
-parms = list(b = 3, s = 39510000, k = 5, shelter_strength = 0.5, mean_temp = 2)
+parms = list(b = 2, s = 39510000, k = 100)
 
 time = seq(from = 1, to = 365, by = 1)
 
 i = 100 # initial infected population
 
-result = ode(y = i, times = time, func = final_model, parms = c(vars=parms))
+result = ode(y = i, times = time, func = final_model, parms = parms)
+head(result)
+plot(result)
 ```
 
+Make data data set that accounts for 
+```{r}
+covid<- as.data.frame(result)
+
+colnames(covid)<- c("time", "infections")
+
+
+# set up the parameter and coefficents that will work into the rest of the data
+shelter_strength<- 0.2 # Strength of shelter in place measure
+mean_temp<- rnorm(n = 365, mean = 65, sd = 5) # normal distribution of temperature
+avg_mile_day = 974219178 # averge miles driven a day in CA noramlly
+weather_coeff = 100000 # coefficient of weather on averge miles driven a day in CA
+shelter_coeff = 100 # coefficient of shelter strength on miles driven a day in CA
+mile_emissions = 0.411 # Emissions factor of 1 mile driven 
+
+# add mean temperature into the covid data 
+covid$temp<- mean_temp
+
+
+# put in a for loop for the effect of shelter in place 
+for (i in length(covid$time)){
+  covid$infections_shelter = covid$infections * shelter_strength
+}
+
+# Put in a for loop for miles driven as dependant on infections_shelter and temperature
+for (i in length(covid$time)){
+  covid$miles_driven = avg_mile_day + weather_coeff * (covid$temp - mean(covid$temp)) - shelter_coeff * (1-shelter_strength)
+}
+
+# loop for ghg emissions
+for (i in length(covid$time)){
+  covid$ghg = covid$miles_driven * mile_emissions
+}
+
+```
 
 
 
