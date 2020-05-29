@@ -85,7 +85,7 @@ time = seq(from = 1, to = 365, by = 1)
 
 i = 100 # initial infected population
 
-result = ode(y = i, times = time, func = final_model, parms = parms)
+result = ode(y = i, times = time, func = final_model, parms = c(parms))
 ```
 
 
