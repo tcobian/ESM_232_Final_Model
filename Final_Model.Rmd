@@ -18,27 +18,15 @@ library(deSolve)
 
 Try to for loop the functions in nested for loops
 ```{r}
-
 final_model<- function(time, i, parms){
   # make the parms list in the function
   b<- parms$b
   s<- parms$s
   k<- parms$k
   
-  
   new_infections = b*s*new_infections - k*new_infections
   
   infected_no_shelter = infected_no_shelter + new_infections
-
-#  infected_shelter = infected_no_shelter * shelter_strength
-  
-#  miles_driven = (mean_temp  * infected_shelter) * avg_mile_day
-  
-#  ghg = miles_driven * mile_emission
-  
-# avg_mile_day = 974219178
-  
-#  mile_emission = 0.411
 
   return(list(infected_no_shelter))
 }
