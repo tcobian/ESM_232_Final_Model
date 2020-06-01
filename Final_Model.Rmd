@@ -26,7 +26,7 @@ SIR <- function(time, state, parms) {
     with(as.list(c(state, parms)),{
 
         # Change in Susceptibles
-        dS <- - beta * S * I  
+        dS <- - beta * S * I 
 
         # Change in Infected
         dI <- beta * S * I - gamma * I 
@@ -62,36 +62,6 @@ matplot(x = time, y = out, type = "l",
 legend(40, 0.7, c("Susceptible", "Infected", "Recovered"), pch = 1, col = 2:4, bty = "n")
 ```
 
-Try to for loop the functions in nested for loops
-```{r}
-
-final_model<- function(time, i, parms){
-  # make the parms list in the function
-  b<- parms$b
-  s<- parms$s
-  k<- parms$k
-  
-  new_cases = b*s*new_cases - k*new_cases
-  
-  cases = new_cases + cases
-  
-  return(list(cases))
-}
-
-```
-
-Run the ODE solver 
-```{r}
-parms = list(b = 2, s = 39510000, k = 100)
-
-time = seq(from = 1, to = 365, by = 1)
-
-i = 100 # initial infected population
-
-result = ode(y = i, times = time, func = final_model, parms = parms)
-head(result)
-
-```
 
 Make data data set that accounts for 
 ```{r}
