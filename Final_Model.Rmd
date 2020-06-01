@@ -24,9 +24,9 @@ final_model<- function(time, i, parms){
   s<- parms$s
   k<- parms$k
   
-  new_cases = (b*s*new_cases) - (k*new_cases)
+  new_cases = (b*s*i) - (k*i)
   
-  cases = cases + new_cases
+  cases = new_cases + i
   
   return(list(cases))
 }
