@@ -39,11 +39,12 @@ SIR <- function(time, state, parms) {
 }
 
 ## Set parms
-## Proportion in each compartment: Susceptible 0.999999, Infected 0.000001, Recovered 0
-init <- c(S = 1-1e-6, I = 1e-6, R = 0.0)
+## Proportion in each compartment: Susceptible 0.999999, Infected 0.001, Recovered 0
+# START DATE: April 16th where around 0.1% of the CA pop. was infected by COVID 
+init <- c(S = .999, I = 0.001, R = 0.0)
 parms <- c(beta = 1.4247, gamma = 0.14286)
 ## Time frame
-time <- seq(1, 365, by = 1)
+time <- seq(1, 90, by = 1)
 
 ## Solve using ODE
 out <- ode(y = init, times = time, func = SIR, parms = parms)
