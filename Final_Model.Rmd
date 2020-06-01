@@ -24,11 +24,11 @@ final_model<- function(time, i, parms){
   s<- parms$s
   k<- parms$k
   
-  new_infections = b*s*new_infections - k*new_infections
+  new_cases = (b*s*new_cases) - (k*new_cases)
   
-  infected_no_shelter = infected_no_shelter + new_infections
-
-  return(list(infected_no_shelter))
+  cases = cases + new_cases
+  
+  return(list(cases))
 }
 
 ```
