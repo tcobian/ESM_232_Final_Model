@@ -24,123 +24,65 @@ SIR <- function(time, state, parms) {
   # 1/γ is the infectious period i.e. the average duration of time an individual remains infected.
   
     with(as.list(c(state, parms)),{
-
         # Change in Susceptibles
         dS <- - beta * S * I 
-
         # Change in Infected
         dI <- beta * S * I - gamma * I 
-
         # Change in Recovered
         dR <- gamma * I 
-
     return(list(c(dS, dI, dR)))
     })
 }
-
 ## Set parms
 ## Proportion in each compartment: Susceptible 0.999999, Infected 0.001, Recovered 0
 # START DATE: April 16th where around 0.1% of the CA pop. was infected by COVID 
-init <- c(S = 39000000, I = 39, R = 0.0)
-parms <- c(beta = .000001, gamma = 0.14286) #gamma = 0.14286
+init <- c(S = .999, I = 0.001, R = 0.0)
+parms <- c(beta = 1.4247, gamma = 0.14286)
 ## Time frame
 time <- seq(1, 90, by = 1)
-
 ## Solve using ODE
 out <- ode(y = init, times = time, func = SIR, parms = parms)
 ## change to data frame
 out <- as.data.frame(out)
 ## Delete time variable
-out$time <- NULL
+out$time <- time
 ## Show data
 head(out, 10)
-
 ## Plot
 matplot(x = time, y = out, type = "l",
         xlab = "Time", ylab = "Susceptible and Recovered", main = "SIR Model",
         lwd = 1, lty = 1, bty = "l", col = 2:4)
-#legend(40, 0.7, c("Susceptible", "Infected", "Recovered"), pch = 1, col = 2:4, bty = "n")
+legend(40, 0.7, c("Susceptible", "Infected", "Recovered"), pch = 1, col = 2:4, bty = "n")
 ```
 
-Try to for loop the functions in nested for loops
-```{r}
-
-final_model<- function(time, i, parms){
-  # make the parms list in the function
-  b<- parms$b
-  s<- parms$s
-  k<- parms$k
-  
-  new_cases = b*s*new_cases - k*new_cases
-  
-  cases = new_cases + cases
-  
-  return(list(cases))
-}
-
-```
-
-Run the ODE solver 
-```{r}
-parms = list(b = 2, s = 39510000, k = 100)
-
-time = seq(from = 1, to = 365, by = 1)
-
-i = 100 # initial infected population
-
-result = ode(y = i, times = time, func = final_model, parms = parms)
-head(result)
-
-```
 
 Make data data set that accounts for 
 ```{r}
-covid<- as.data.frame(result)
-
-colnames(covid)<- c("time", "infections")
-
-
 # set up the parameter and coefficents that will work into the rest of the data
-shelter_strength<- 0.2 # Strength of shelter in place measure
-mean_temp<- rnorm(n = 365, mean = 65, sd = 5) # normal distribution of temperature
+mean_temp<- rnorm(n = 90, mean = 65, sd = 5) # normal distribution of temperature
 avg_mile_day = 974219178 # averge miles driven a day in CA noramlly
 weather_coeff = 100000 # coefficient of weather on averge miles driven a day in CA
 shelter_coeff = 100 # coefficient of shelter strength on miles driven a day in CA
 mile_emissions = 0.411 # Emissions factor of 1 mile driven 
-
 # add mean temperature into the covid data 
-covid$temp<- mean_temp
-
-
-## put in a for loop for the effect of shelter in place 
-#for (i in length(covid$time)){
-#  covid$infections_shelter = covid$infections * shelter_strength
-#}
-
+out$temp<- mean_temp
 # Put in a for loop for miles driven as dependant on infections_shelter and temperature
-for (i in length(covid$time)){
-  covid$miles_driven = avg_mile_day + weather_coeff * (covid$temp - mean(covid$temp)) - shelter_coeff * (1-shelter_strength)
+for (i in length(out$S)){
+  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (1-shelter_strength)
 }
-
 # loop for ghg emissions
-for (i in length(covid$time)){
-  covid$ghg = covid$miles_driven * mile_emissions
+for (i in length(out$S)){
+  out$ghg = out$miles_driven * mile_emissions
 }
-
 ```
 
+Sensativity Analysis #1
+```{r}
+```
 
-
-
-
-
-
-
-
-
-
-
-
+Sensativity Analysis #2
+```{r}
+```
 
 
 
