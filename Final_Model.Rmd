@@ -26,7 +26,7 @@ SIR <- function(time, state, parms) {
     with(as.list(c(state, parms)),{
 
         # Change in Susceptibles
-        dS <- - beta * S * I  
+        dS <- - beta * S * I 
 
         # Change in Infected
         dI <- beta * S * I - gamma * I 
@@ -41,8 +41,8 @@ SIR <- function(time, state, parms) {
 ## Set parms
 ## Proportion in each compartment: Susceptible 0.999999, Infected 0.001, Recovered 0
 # START DATE: April 16th where around 0.1% of the CA pop. was infected by COVID 
-init <- c(S = .999, I = 0.001, R = 0.0)
-parms <- c(beta = 1.4247, gamma = 0.14286)
+init <- c(S = 39000000, I = 39, R = 0.0)
+parms <- c(beta = .000001, gamma = 0.14286) #gamma = 0.14286
 ## Time frame
 time <- seq(1, 90, by = 1)
 
@@ -59,7 +59,7 @@ head(out, 10)
 matplot(x = time, y = out, type = "l",
         xlab = "Time", ylab = "Susceptible and Recovered", main = "SIR Model",
         lwd = 1, lty = 1, bty = "l", col = 2:4)
-legend(40, 0.7, c("Susceptible", "Infected", "Recovered"), pch = 1, col = 2:4, bty = "n")
+#legend(40, 0.7, c("Susceptible", "Infected", "Recovered"), pch = 1, col = 2:4, bty = "n")
 ```
 
 Try to for loop the functions in nested for loops
@@ -112,10 +112,10 @@ mile_emissions = 0.411 # Emissions factor of 1 mile driven
 covid$temp<- mean_temp
 
 
-# put in a for loop for the effect of shelter in place 
-for (i in length(covid$time)){
-  covid$infections_shelter = covid$infections * shelter_strength
-}
+## put in a for loop for the effect of shelter in place 
+#for (i in length(covid$time)){
+#  covid$infections_shelter = covid$infections * shelter_strength
+#}
 
 # Put in a for loop for miles driven as dependant on infections_shelter and temperature
 for (i in length(covid$time)){
