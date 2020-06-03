@@ -45,14 +45,14 @@ SEIR <- function(time, state, parms) {
         dR <- gamma * I 
         
         # make an equatioon for rho based on dR which serves as a measure of # of cases
-        rho<- dR * 2
+        rho<- dR * (1/shelter_response)
         
     return(list(c(dS, dE, dI, dR, rho)))
     })
 }
 # Set parameteres and intial conditions   ***THESE CONDITIONS ARE VERY SENSITIVE AND UNKNOWN IN REALITY***
 init <- c(S =1-.001, E =.001, I = 0, R = 0, rho = 0) # assuming 0.1% of the population has been infected
-parms <- c(alpha = 0.2, beta = 2, gamma = 1) # assuming a stay at home order that reduces social contact by 20%
+parms <- c(alpha = 0.2, beta = 2, gamma = 1, shelter_response = 0.1) # assuming a stay at home order that reduces social contact by 20%
 # NOTE: Let us define R0 = betta/gamma, which is how fast the disease spreads
 # When R0 > 1 the disease will grow exponentially, likewise R0 < 1 dies exponentially
 time <- seq(1, 180, by = 1)
@@ -87,8 +87,8 @@ out$shelter_strength<- rho_vector # add shelter strength to data
 
 mean_temp<- rnorm(n = 90, mean = 65, sd = 5) # normal distribution of temperature
 avg_mile_day = 974219178 # averge miles driven a day in CA noramlly
-weather_coeff = 1000 # coefficient of weather on averge miles driven a day in CA
-shelter_coeff = 100000 # coefficient of shelter strength on miles driven a day in CA
+weather_coeff = 100 # coefficient of weather on averge miles driven a day in CA
+shelter_coeff = 1000000 # coefficient of shelter strength on miles driven a day in CA
 mile_emissions = 0.411 # Emissions factor of 1 mile driven 
 # add mean temperature into the covid data 
 out$temp<- mean_temp
