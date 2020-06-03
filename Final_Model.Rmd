@@ -94,7 +94,7 @@ mile_emissions = 0.411 # Emissions factor of 1 mile driven
 out$temp<- mean_temp
 # Put in a for loop for miles driven as dependant on infections_shelter and temperature
 for (i in length(out$S)){
-  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (1/out$rho)
+  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (out$rho)
 }
 # loop for ghg emissions
 for (i in length(out$S)){
