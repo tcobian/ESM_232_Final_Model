@@ -45,7 +45,7 @@ SEIR <- function(time, state, parms) {
         dR <- gamma * I 
         
         # make an equatioon for rho based on dR which serves as a measure of # of cases
-        rho<- dR * (1/shelter_response)
+        rho<- dR
         
     return(list(c(dS, dE, dI, dR, rho)))
     })
