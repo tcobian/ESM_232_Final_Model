@@ -44,8 +44,8 @@ SEIR <- function(time, state, parms) {
         # Change in RECOVERED
         dR <- gamma * I 
         
-        # make an equatioon for rho based on dR which serves as a measure of # of cases
-        rho<- dR
+        # make an equation for rho based on dR which serves as a measure of # of cases
+        rho<- 1 - dR
         
     return(list(c(dS, dE, dI, dR, rho)))
     })
@@ -87,7 +87,7 @@ out$shelter_strength<- rho_vector # add shelter strength to data
 
 mean_temp<- rnorm(n = 90, mean = 65, sd = 5) # normal distribution of temperature
 avg_mile_day = 974219178 # averge miles driven a day in CA noramlly
-weather_coeff = 100 # coefficient of weather on averge miles driven a day in CA
+weather_coeff = 1000000 # coefficient of weather on averge miles driven a day in CA
 shelter_coeff = 1000000 # coefficient of shelter strength on miles driven a day in CA
 mile_emissions = 0.411 # Emissions factor of 1 mile driven 
 # add mean temperature into the covid data 
