@@ -45,7 +45,7 @@ SEIR <- function(time, state, parms) {
         dR <- gamma * I 
         
         # make an equatioon for rho based on dR which serves as a measure of # of cases
-        rho<- dR * 0.01
+        rho<- dR * 2
         
     return(list(c(dS, dE, dI, dR, rho)))
     })
