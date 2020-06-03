@@ -92,6 +92,14 @@ for (i in length(out$S)){
 }
 ```
 
+Vizuals for GHG emissiona and driving
+```{r}
+
+```
+
+
+
+
 Sensativity Analysis #1
 ```{r}
 ```
