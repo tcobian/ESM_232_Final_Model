@@ -31,6 +31,7 @@ SEIR <- function(time, state, parms) {
   # S = SUSCEPTIBLE, E = EXPOSED, I = INFECTED, R = RECOVERED
   # 
     with(as.list(c(state, parms)),{
+      
         # Change in SUSCEPTIBLE
         dS <- - rho * beta * S * I 
         
@@ -43,12 +44,15 @@ SEIR <- function(time, state, parms) {
         # Change in RECOVERED
         dR <- gamma * I 
         
-    return(list(c(dS, dE, dI, dR)))
+        # make an equatioon for rho based on dR which serves as a measure of # of cases
+        rho<- dR * 0.01
+        
+    return(list(c(dS, dE, dI, dR, rho)))
     })
 }
 # Set parameteres and intial conditions   ***THESE CONDITIONS ARE VERY SENSITIVE AND UNKNOWN IN REALITY***
-init <- c(S =1-.001, E =.001, I = 0, R = 0) # assuming 0.1% of the population has been infected
-parms <- c(alpha = 0.2, beta = 2, gamma = 1, rho = .8) # assuming a stay at home order that reduces social contact by 20%
+init <- c(S =1-.001, E =.001, I = 0, R = 0, rho = 0) # assuming 0.1% of the population has been infected
+parms <- c(alpha = 0.2, beta = 2, gamma = 1) # assuming a stay at home order that reduces social contact by 20%
 # NOTE: Let us define R0 = betta/gamma, which is how fast the disease spreads
 # When R0 > 1 the disease will grow exponentially, likewise R0 < 1 dies exponentially
 time <- seq(1, 180, by = 1)
@@ -66,7 +70,6 @@ ggplot(data=out, aes(x = time)) +
   geom_point(aes(y=E, color="Exposed")) +
   geom_point(aes(y=I, color="Infected")) +
   geom_point(aes(y=R, color="Recovered (Immune)")) +
-  geom_point(aes(y=ghg, color="Recovered (Immune)")) +
   # scale_colour_manual(name=) +
   theme_minimal() +
   labs(x = "Days", y = "Percent of Population", color = "") 
@@ -91,7 +94,7 @@ mile_emissions = 0.411 # Emissions factor of 1 mile driven
 out$temp<- mean_temp
 # Put in a for loop for miles driven as dependant on infections_shelter and temperature
 for (i in length(out$S)){
-  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (1/out$shelter_strength)
+  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (1/out$rho)
 }
 # loop for ghg emissions
 for (i in length(out$S)){
