@@ -66,6 +66,7 @@ ggplot(data=out, aes(x = time)) +
   geom_point(aes(y=E, color="Exposed")) +
   geom_point(aes(y=I, color="Infected")) +
   geom_point(aes(y=R, color="Recovered (Immune)")) +
+  geom_point(aes(y=ghg, color="Recovered (Immune)")) +
   # scale_colour_manual(name=) +
   theme_minimal() +
   labs(x = "Days", y = "Percent of Population", color = "") 
@@ -75,16 +76,18 @@ ggplot(data=out, aes(x = time)) +
 Make data data set that accounts for 
 ```{r}
 # set up the parameter and coefficents that will work into the rest of the data
+rho_vector<-seq(0.4, 0.9, by = ((0.9-0.4)/length(out$time)))# vector of shelter in place strength
+length(rho_vector)
 mean_temp<- rnorm(n = 90, mean = 65, sd = 5) # normal distribution of temperature
 avg_mile_day = 974219178 # averge miles driven a day in CA noramlly
 weather_coeff = 100000 # coefficient of weather on averge miles driven a day in CA
-shelter_coeff = 100 # coefficient of shelter strength on miles driven a day in CA
+shelter_coeff = 100000 # coefficient of shelter strength on miles driven a day in CA
 mile_emissions = 0.411 # Emissions factor of 1 mile driven 
 # add mean temperature into the covid data 
 out$temp<- mean_temp
 # Put in a for loop for miles driven as dependant on infections_shelter and temperature
 for (i in length(out$S)){
-  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (1-shelter_strength)
+  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * parms[4]
 }
 # loop for ghg emissions
 for (i in length(out$S)){
@@ -94,7 +97,10 @@ for (i in length(out$S)){
 
 Vizuals for GHG emissiona and driving
 ```{r}
-
+# plot for driving
+drive<- ggplot(out, aes(x = time, y = ghg))+
+  geom_point()
+drive
 ```
 
 
