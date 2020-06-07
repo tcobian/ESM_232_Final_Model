@@ -133,14 +133,14 @@ ghg = function(avg_mile_day, weather_coeff, shelter_coeff, mean_temp, V6){
 np = 1000
 
 # make one distribution 
-weather_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
+weather_coeff<- rnorm(mean = 10000, sd = 300, n = np)
 shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
 
 # make a data frame of this gamma
 X1<- cbind.data.frame(weather_coeff, shelter_coeff)
 
 # make a second data set
-weather_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
+weather_coeff<- rnorm(mean = 1000, sd = 300, n = np)
 shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
 
 # make a data frame of this gamma
@@ -160,7 +160,7 @@ res = mapply(FUN = ghg,
              shelter_coeff = covid_sens$X$shelter_coeff,
              MoreArgs = list(avg_mile_day = 974219178,
                              mean_temp = 65,
-                             V6 = 0.6
+                             V6 = 0.7
                              ))
 res<- unlist(res)
 
@@ -178,6 +178,8 @@ plot(ghg_sobel)
 
 # make a data frame for plotting
 both = cbind.data.frame(ghg_sobel$X, gs=ghg_sobel$y)
+
+ggplot(both, aes(time, ghg, col=height))+geom_point()+labs(y="Conductance (mm/s)", x="Windspeed")
 
 ```
 
