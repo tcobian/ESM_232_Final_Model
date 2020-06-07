@@ -31,32 +31,31 @@ SEIR <- function(time, state, parms) {
   # S = SUSCEPTIBLE, E = EXPOSED, I = INFECTED, R = RECOVERED
   # 
     with(as.list(c(state, parms)),{
-        
+      
         # Change in SUSCEPTIBLE
-        dS <- - rho[i] * beta * S * I 
+        dS <- - rho * beta * S * I 
         
         # Change in EXPOSED
-        dE <- rho[i] * beta * S * I - alpha * E
-        
-        # Change in INFECTED
-        dI <- alpha * E - gamma * I
+        dE <- rho * beta * S * I - alpha * E
         
         # Change in RECOVERED
         dR <- gamma * I 
+        
+        # make an equation for rho based on dR which serves as a measure of # of cases
+        rho<- 1 - dR
+        
+        # Change in INFECTED
+        dI <- alpha * E - gamma * I
         
     return(list(c(dS, dE, dI, dR, rho)))
     })
 }
 # Set parameteres and intial conditions   ***THESE CONDITIONS ARE VERY SENSITIVE AND UNKNOWN IN REALITY***
-time <- seq(1, 180, by = 1)
-rho_start = 0.6
-rho_end = 1
-rho_diff = abs(rho_end - rho_start)
-rho = seq(rho_start, rho_end, by = rho_diff/length(time))
-init <- c(S =1-.001, E =.001, I = 0, R = 0, rho) # assuming 0.1% of the population has been infected
+init <- c(S =1-.001, E =.001, I = 0, R = 0, rho = 0) # assuming 0.1% of the population has been infected
 parms <- c(alpha = 0.2, beta = 2, gamma = 1) # assuming a stay at home order that reduces social contact by 20%
 # NOTE: Let us define R0 = betta/gamma, which is how fast the disease spreads
 # When R0 > 1 the disease will grow exponentially, likewise R0 < 1 dies exponentially
+time <- seq(1, 180, by = 1)
 
 # Solve using ODE
 out <- ode(y = init, times = time, func = SEIR, parms = parms)
@@ -64,11 +63,8 @@ out <- ode(y = init, times = time, func = SEIR, parms = parms)
 # Change to data frame
 out <- as.data.frame(out)
 out$time <- time # Delete time variable
-# 
-# ggplot(data=out, aes(x = time)) +
-#   geom_point(aes(y=rho, color="Rho"))
 
-#Plot results
+# Plot results
 ggplot(data=out, aes(x = time)) +
   geom_point(aes(y=S, color="Susceptible")) +
   geom_point(aes(y=E, color="Exposed")) +
@@ -76,7 +72,7 @@ ggplot(data=out, aes(x = time)) +
   geom_point(aes(y=R, color="Recovered (Immune)")) +
   # scale_colour_manual(name=) +
   theme_minimal() +
-  labs(x = "Days", y = "Percent of Population", color = "")
+  labs(x = "Days", y = "Percent of Population", color = "") 
 ```
 
 
@@ -85,6 +81,7 @@ Make data data set that accounts for
 # set up the parameter and coefficents that will work into the rest of the data
 
 rho_vector<-seq(0.4, 0.9, by = 0.002777778)# vector of shelter in place strength
+length(rho_vector)
 
 out$shelter_strength<- rho_vector # add shelter strength to data
 
