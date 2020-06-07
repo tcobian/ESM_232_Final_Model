@@ -50,7 +50,7 @@ SEIR <- function(time, state, parms) {
 # Set parameteres and intial conditions   ***THESE CONDITIONS ARE VERY SENSITIVE AND UNKNOWN IN REALITY***
 time <- seq(1, 180, by = 1)
 rho_start = 0.6
-rho_end = 1.2
+rho_end = 1
 rho_diff = abs(rho_end - rho_start)
 rho = seq(rho_start, rho_end, by = rho_diff/length(time))
 init <- c(S =1-.001, E =.001, I = 0, R = 0, rho) # assuming 0.1% of the population has been infected
@@ -68,8 +68,13 @@ out$time <- time # Delete time variable
 # ggplot(data=out, aes(x = time)) +
 #   geom_point(aes(y=rho, color="Rho"))
 
+
+out_clean<- out %>% 
+  select(time, S, E, I, R, V6)
+
+
 #Plot results
-ggplot(data=out, aes(x = time)) +
+ggplot(data=out_clean, aes(x = time)) +
   geom_point(aes(y=S, color="Susceptible")) +
   geom_point(aes(y=E, color="Exposed")) +
   geom_point(aes(y=I, color="Infected")) +
@@ -79,12 +84,8 @@ ggplot(data=out, aes(x = time)) +
   labs(x = "Days", y = "Percent of Population", color = "")
 ```
 
-
 Make data data set that accounts for 
 ```{r}
-# set up the parameter and coefficents that will work into the rest of the data
-
-rho <-seq(0.4, 0.9, by = 0.002777778)# vector of shelter in place strength
 
 out$shelter_strength<- rho # add shelter strength to data
 
@@ -94,21 +95,26 @@ weather_coeff = 1000000 # coefficient of weather on averge miles driven a day in
 shelter_coeff = 1000000 # coefficient of shelter strength on miles driven a day in CA
 mile_emissions = 0.411 # Emissions factor of 1 mile driven 
 # add mean temperature into the covid data 
-out$temp<- mean_temp
+out_clean$temp<- mean_temp
 # Put in a for loop for miles driven as dependant on infections_shelter and temperature
-for (i in length(out$time)){
-  out$miles_driven = avg_mile_day + weather_coeff * (out$temp - mean(out$temp)) - shelter_coeff * (out$rho)
+
+out_clean$miles_driven<- rep(NA, 180)
+
+for (i in length(out_clean$time)){
+  out_clean$miles_driven = avg_mile_day + weather_coeff * (out_clean$temp - mean(out_clean$temp)) + shelter_coeff * (out_clean$V6)
 }
 # loop for ghg emissions
-for (i in length(out$time)){
-  out$ghg = out$miles_driven * mile_emissions
+for (i in length(out_clean$time)){
+  out_clean$ghg = out_clean$miles_driven * mile_emissions
 }
 ```
 
 Vizuals for GHG emissiona and driving
 ```{r}
+options(scipen = 99)
+
 # plot for driving
-drive<- ggplot(out, aes(x = time, y = ghg))+
+drive<- ggplot(out_clean, aes(x = time, y = ghg))+
   geom_line(color = "darkorange4")+
   theme_minimal()+
   labs(x = "Time", y = "kgCO2e", title = "Mobile GHG Emission", subtitle = "Impact of weather and shelter in place measures")
