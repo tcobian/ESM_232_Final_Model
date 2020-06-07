@@ -133,15 +133,15 @@ ghg = function(avg_mile_day, weather_coeff, shelter_coeff, mean_temp, V6){
 np = 1000
 
 # make one distribution 
-weather_coeff<- rnorm(mean = 10000, sd = 300, n = np)
-shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
+weather_coeff<- rnorm(mean = 1000, sd = 300, n = np)
+shelter_coeff<- rnorm(mean = 1000000, sd = 300, n = np)
 
 # make a data frame of this gamma
 X1<- cbind.data.frame(weather_coeff, shelter_coeff)
 
 # make a second data set
 weather_coeff<- rnorm(mean = 1000, sd = 300, n = np)
-shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
+shelter_coeff<- rnorm(mean = 1000000, sd = 300, n = np)
 
 # make a data frame of this gamma
 X2<- cbind.data.frame(weather_coeff, shelter_coeff)
@@ -161,7 +161,9 @@ res = mapply(FUN = ghg,
              MoreArgs = list(avg_mile_day = 974219178,
                              mean_temp = 65,
                              V6 = 0.7
-                             ))
+                            ))
+
+# Unlist the results from res
 res<- unlist(res)
 
 ghg_sobel = sensitivity::tell(covid_sens, res)
@@ -175,13 +177,35 @@ ghg_sobel$T
 print(ghg_sobel)
 plot(ghg_sobel)
 
-
 # make a data frame for plotting
-both = cbind.data.frame(ghg_sobel$X, gs=ghg_sobel$y)
+both = cbind.data.frame(ghg_sobel$X, ghg=ghg_sobel$y)
 
-ggplot(both, aes(time, ghg, col=height))+geom_point()+labs(y="Conductance (mm/s)", x="Windspeed")
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
