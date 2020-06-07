@@ -38,14 +38,14 @@ SEIR <- function(time, state, parms) {
         # Change in EXPOSED
         dE <- rho * beta * S * I - alpha * E
         
-        # Change in INFECTED
-        dI <- alpha * E - gamma * I
-        
         # Change in RECOVERED
         dR <- gamma * I 
         
         # make an equation for rho based on dR which serves as a measure of # of cases
         rho<- 1 - dR
+        
+        # Change in INFECTED
+        dI <- alpha * E - gamma * I
         
     return(list(c(dS, dE, dI, dR, rho)))
     })
