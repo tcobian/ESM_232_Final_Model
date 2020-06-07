@@ -121,16 +121,11 @@ drive
 
 Sobol sensativity on gamma and beta
 ```{r}
-ghg<- for (i in length(out_clean$time)){
-  out_clean$miles_driven = avg_mile_day + weather_coeff * (out_clean$temp - mean(out_clean$temp)) + shelter_coeff * (out_clean$V6)
+ghg = function(avg_mile_day, weather_coeff, shelter_coeff, mean_temp, V6){
+  miles_driven = avg_mile_day + weather_coeff * temp - mean(temp) + shelter_coeff * V6
+  ghg = miles_driven * mile_emissions
   
-  out_clean$ghg = out_clean$miles_driven * mile_emissions
-      
-}
-
-# loop for ghg emissions
-for (i in length(out_clean$time)){
-  out_clean$ghg = out_clean$miles_driven * mile_emissions
+  return(list(ghg))
 }
 
 
@@ -152,44 +147,40 @@ shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
 X2<- cbind.data.frame(weather_coeff, shelter_coeff)
 
 # apply sobol
-covid_sens<- sobol2007(model = NULL, X1, X2, nboot = 500)
+covid_sens<- sobol2007(model = NULL, X1, X2, nboot = 50)
 
-init <- c(S =1-.001, E =.001, I = 0, R = 0, rho) # assuming 0.1% of the population has been infected
-parms <- c(alpha = 0.2, beta = 2, gamma = 1)
+# avg_mile_day = 974219178
+mean_temp<- rnorm(n = 180, mean = 65, sd = 5) 
+
+
 
 # Run model for all parameter sets
-res = mapply(FUN = SEIR,
-             gamma = covid_sens$X$gamma,
-             beta = covid_sens$X$betta,
-             MoreArgs = list(time = 180,
-                             S = 1-.001,
-                             E = 0.001,
-                             I = 0,
-                             R = 0,
-                             rho = rho,
-                             alpha = 0.2
+res = mapply(FUN = ghg,
+             weather_coeff = covid_sens$X$weather_coeff,
+             shelter_coeff = covid_sens$X$shelter_coeff,
+             MoreArgs = list(avg_mile_day = 974219178,
+                             mean_temp = mean_temp,
+                             V6 = out_clean$V6
                              ))
+res<- unlist(res)
 
-SEIR_sobel = sensitivity::tell(covid_sens, res, res.names="out")
+ghg_sobel = sensitivity::tell(covid_sens, res, res.names = "ga")
 
 # first-order indices 
-SERI_sobel$S
+ghg_sobel$S
 
 # total sensitivity index 
-sens_forest_sobel$T
+ghg_sobel$T
 
-print(sens_forest_sobel)
-plot(sens_forest_sobel)
+print(ghg_sobel)
+plot(ghg_sobel)
 
 
 # make a data frame for plotting
-both = cbind.data.frame(sens_forest_sobel$X, gs=sens_forest_sobel$y)
+both = cbind.data.frame(ghg_sobel$X, gs=ghg_sobel$y)
 
 ```
 
-Sensativity Analysis #2
-```{r}
-```
 
 
 
