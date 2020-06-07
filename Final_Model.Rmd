@@ -122,7 +122,7 @@ drive
 Sobol sensativity on gamma and beta
 ```{r}
 ghg = function(avg_mile_day, weather_coeff, shelter_coeff, mean_temp, V6){
-  miles_driven = avg_mile_day + weather_coeff * temp - mean(temp) + shelter_coeff * V6
+  miles_driven = avg_mile_day + weather_coeff * mean_temp - mean(mean_temp) + shelter_coeff * V6
   ghg = miles_driven * mile_emissions
   
   return(list(ghg))
@@ -159,12 +159,12 @@ res = mapply(FUN = ghg,
              weather_coeff = covid_sens$X$weather_coeff,
              shelter_coeff = covid_sens$X$shelter_coeff,
              MoreArgs = list(avg_mile_day = 974219178,
-                             mean_temp = mean_temp,
-                             V6 = out_clean$V6
+                             mean_temp = 65,
+                             V6 = 0.6
                              ))
 res<- unlist(res)
 
-ghg_sobel = sensitivity::tell(covid_sens, res, res.names = "ga")
+ghg_sobel = sensitivity::tell(covid_sens, res)
 
 # first-order indices 
 ghg_sobel$S
