@@ -87,8 +87,6 @@ ggplot(data=out_clean, aes(x = time)) +
 Make data data set that accounts for 
 ```{r}
 
-out$shelter_strength<- rho # add shelter strength to data
-
 mean_temp<- rnorm(n = 180, mean = 65, sd = 5) # normal distribution of temperature
 avg_mile_day = 974219178 # averge miles driven a day in CA noramlly
 weather_coeff = 1000000 # coefficient of weather on averge miles driven a day in CA
@@ -123,31 +121,69 @@ drive
 
 Sobol sensativity on gamma and beta
 ```{r}
+ghg<- for (i in length(out_clean$time)){
+  out_clean$miles_driven = avg_mile_day + weather_coeff * (out_clean$temp - mean(out_clean$temp)) + shelter_coeff * (out_clean$V6)
+  
+  out_clean$ghg = out_clean$miles_driven * mile_emissions
+      
+}
+
+# loop for ghg emissions
+for (i in length(out_clean$time)){
+  out_clean$ghg = out_clean$miles_driven * mile_emissions
+}
+
+
 # establish the number of runs
 np = 1000
 
 # make one distribution 
-gamma<- rnorm(mean = 1, sd = 0.05, n = np)
-betta<- rnorm(mean = 2, sd = 0.05, n = np)
+weather_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
+shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
 
 # make a data frame of this gamma
-X1<- cbind.data.frame(gamma, betta)
+X1<- cbind.data.frame(weather_coeff, shelter_coeff)
 
 # make a second data set
-gamma<- rnorm(mean = 1, sd = 0.05, n = np)
-betta<- rnorm(mean = 2, sd = 0.05, n = np)
+weather_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
+shelter_coeff<- rnorm(mean = 1000000, sd = 500, n = np)
 
 # make a data frame of this gamma
-X2<- cbind.data.frame(gamma, betta)
+X2<- cbind.data.frame(weather_coeff, shelter_coeff)
 
 # apply sobol
 covid_sens<- sobol2007(model = NULL, X1, X2, nboot = 500)
 
+init <- c(S =1-.001, E =.001, I = 0, R = 0, rho) # assuming 0.1% of the population has been infected
+parms <- c(alpha = 0.2, beta = 2, gamma = 1)
+
 # Run model for all parameter sets
-res = mapply(FUN = final_model,
+res = mapply(FUN = SEIR,
              gamma = covid_sens$X$gamma,
-             betta = covid_sens$X$betta,
-             MoreArgs = list(time = 180, int = c(S =1-.001, E =.001, I = 0, R = 0, rho = 0), parms = c(alpha = 0.2,S =1-.001, E =.001, I = 0, R = 0, rho = 0)))
+             beta = covid_sens$X$betta,
+             MoreArgs = list(time = 180,
+                             S = 1-.001,
+                             E = 0.001,
+                             I = 0,
+                             R = 0,
+                             rho = rho,
+                             alpha = 0.2
+                             ))
+
+SEIR_sobel = sensitivity::tell(covid_sens, res, res.names="out")
+
+# first-order indices 
+SERI_sobel$S
+
+# total sensitivity index 
+sens_forest_sobel$T
+
+print(sens_forest_sobel)
+plot(sens_forest_sobel)
+
+
+# make a data frame for plotting
+both = cbind.data.frame(sens_forest_sobel$X, gs=sens_forest_sobel$y)
 
 ```
 
