@@ -7,6 +7,13 @@ output:
   pdf_document: default
 ---
 
+In this model we wanted to understand how the COVID-19 pandemic, the subsequent shelter in place orders, and the weather affected GHG emissions from mobile vehicles in California. To achieve this we first made a SEIR model that was able to account for what percent of the population was Susceptible to the disease, as well as Exposed, Infected, and Recovered. We used the Recovered output as a value for a number of cases. This model took inputs of alpha, which is the inverse of the incubation period, beta, which is the average contact rate of the population, gamma which is the inverse of the mean infectious period, and rho which is the effect of social distancing where 0 represents a total lock down and 1 represents no regulation at all. For our modeling purposes we ran a scenario in which rho (lock down severity) was transitioned from 0.6 (a 40% lock down) to 1 (no regulation) over a 6 month time period. What we found from running this initial model was that the number of cases rose and approached an asymptote at around 4 months into the pandemic.
+
+Next to assess how these disease dynamics impacted mobile GHG emissions a second function was built off of the outputs on the SEIR model. This was done by taking the average miles driven in CA on a normal and multiplying it by the temperature (the temperature subtracted from the mean temperature of 65 degrees therefore if the temperature was higher than 65 the mileage would increase and if it was lower than 65 it would decrease) this value was then multiplied by a “weather coefficient” that exacerbated this effect. A similar process was done for rho (shelter in place strength) where rho was multiplied by a “shelter coefficient” which increased the impact that shelter in place orders had on driving in the state (if shelter orders were more strict less driving occurred and vice versa). The results of this analysis was seen that GHG emissions steadily rose as shelter in place measures decreased in severity with day to day variation based on weather. It can be noted that a linear pattern of GHG emissions were only shown when the shelter coefficient was higher than the weather coefficient, or else GHG emissions were mainly based on weather events. 
+
+Lastly  a sensitivity analysis was performed on the weather coefficient and shelter coefficient. A sobol sensitivity analysis was  used. It was found that after 1000 different variations in the two coefficients the model output of GHG emissions were more sensitive to changes in the shelter coefficient than the weather coefficient. 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -82,7 +89,7 @@ ggplot(data=out_clean, aes(x = time)) +
   geom_point(aes(y=S, color="Susceptible")) +
   geom_point(aes(y=E, color="Exposed")) +
   geom_point(aes(y=I, color="Infected")) +
-  geom_point(aes(y=R, color="Recovered (Immune)")) +
+  geom_point(aes(y=R, color="Recovered (Cases)")) +
   # scale_colour_manual(name=) +
   theme_minimal() +
   labs(x = "Days", y = "Percent of Population", color = "")
@@ -119,7 +126,7 @@ options(scipen = 99)
 drive<- ggplot(out_clean, aes(x = time, y = ghg))+
   geom_line(color = "darkorange4")+
   theme_minimal()+
-  labs(x = "Time", y = "kgCO2e", title = "Mobile GHG Emission", subtitle = "Impact of weather and shelter in place measures")
+  labs(x = "Days", y = "kgCO2e", title = "Mobile GHG Emission", subtitle = "Impact of weather and shelter in place measures")
 drive
 ```
 
