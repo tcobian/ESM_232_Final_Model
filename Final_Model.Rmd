@@ -2,7 +2,9 @@
 title: "Final_Model"
 author: "Tyler Cobian, Jeremy Knox, Alex Smith"
 date: "5/26/2020"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -10,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Load the packages
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(sensitivity)
 library(deSolve)
@@ -30,8 +32,8 @@ SEIR <- function(time, state, parms) {
   # VARIABLES:
   # S = SUSCEPTIBLE, E = EXPOSED, I = INFECTED, R = RECOVERED
   # 
-    with(as.list(c(state, parms)),{
-        
+    with(as.list(c(state, parms, i = time)),{
+      
         # Change in SUSCEPTIBLE
         dS <- - rho[i] * beta * S * I 
         
@@ -49,10 +51,12 @@ SEIR <- function(time, state, parms) {
 }
 # Set parameteres and intial conditions   ***THESE CONDITIONS ARE VERY SENSITIVE AND UNKNOWN IN REALITY***
 time <- seq(1, 180, by = 1)
+
 rho_start = 0.6
 rho_end = 1
 rho_diff = abs(rho_end - rho_start)
 rho = seq(rho_start, rho_end, by = rho_diff/length(time))
+
 init <- c(S =1-.001, E =.001, I = 0, R = 0, rho) # assuming 0.1% of the population has been infected
 parms <- c(alpha = 0.2, beta = 2, gamma = 1) # assuming a stay at home order that reduces social contact by 20%
 # NOTE: Let us define R0 = betta/gamma, which is how fast the disease spreads
@@ -175,11 +179,6 @@ ghg_sobel$S
 ghg_sobel$T
 
 print(ghg_sobel)
-plot(ghg_sobel)
-
-# make a data frame for plotting
-both = cbind.data.frame(ghg_sobel$X, ghg=ghg_sobel$y)
-
 
 ```
 
